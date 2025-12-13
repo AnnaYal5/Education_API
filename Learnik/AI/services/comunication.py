@@ -41,7 +41,7 @@ class AICommunicator:
         
         return response
 
-    async def generate_conspect(self, theme: str, count_papers: int, language: str, complexity: int, style: str, font: str, size_font: int) -> str:
+    async def generate_conspect(self, theme: str, count_words: int, language: str, complexity: int, style: str, font: str, size_font: int) -> str:
 
         """
         Функція для генерації конспекту на задану тему з використанням AI-моделі.
@@ -61,9 +61,9 @@ class AICommunicator:
         user_prompt = f"""Generate a complete academic paper in HTML format.
 
             Topic: {theme}
-            Length: {count_papers} pages (~{count_papers * 500}-{count_papers * 600} words)
+            Length: {count_words} words
             Language: {language} (ALL content must be in {language})
-            Complexity: Level {complexity}/5
+            Complexity: Level {complexity}
             Style: {style}
             Font: {font}
             Font Size: {size_font}pt

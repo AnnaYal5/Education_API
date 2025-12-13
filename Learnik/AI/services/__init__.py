@@ -1,0 +1,3 @@
+from .comunication import (
+    AICommunicator
+)
