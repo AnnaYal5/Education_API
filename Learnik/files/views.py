@@ -1,27 +1,41 @@
-from rest_framework.decorators import api_view
-from rest_framework.response import Response
-from rest_framework import status
-from .services import get_file_content_service, FileServiceError
+import os
+from django.conf import settings
+from django.http import JsonResponse
+from django.http import FileResponse
+from django.core.files.base import ContentFile
+from .models import TextStorage
 
+#читає текст від користувача та видаляє
+def upload_file_and_read_text(request):
 
-@api_view(['GET'])
-def get_file_content(request, file_id):
-    try:
-        title, content = get_file_content_service(file_id)
+    uploaded_file = request.FILES['file']
 
-        return Response({
-            'file_id': file_id,
-            'title': title,
-            'content': content
-        }, status=status.HTTP_200_OK)
+    temp_path = settings.MEDIA_ROOT / uploaded_file.name
 
-    except FileServiceError as e:
-        return Response(
-            {"detail": str(e)},
-            status=status.HTTP_404_NOT_FOUND
-        )
-    except Exception:
-        return Response(
-            {"detail": "Невідома внутрішня помилка сервера."},
-            status=status.HTTP_500_INTERNAL_SERVER_ERROR
-        )
+    with open(temp_path, 'wb+') as destination:
+        for chunk in uploaded_file.chunks():
+            destination.write(chunk)
+
+    with open(temp_path, 'r', encoding='utf-8') as f:
+        text = f.read()
+
+    os.remove(temp_path)
+
+    return JsonResponse({
+        "text": text
+    })
+
+#текст береться з бд та після створення видаляється файл
+def download_text_as_file(request, text_id):
+
+    obj = TextStorage.objects.get(id=text_id)
+
+    content = ContentFile(obj.text.encode('utf-8'))
+
+    response = FileResponse(
+        content,
+        as_attachment=True,
+        filename=f"{obj.title}.txt"
+    )
+
+    return response

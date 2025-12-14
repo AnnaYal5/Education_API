@@ -1,24 +1,31 @@
-from django.shortcuts import get_object_or_404
-from .models import  FileLearning
 import os
+from django.core.files.base import ContentFile
+from django.conf import settings
+from .models import GeneratedFile
 
 
-class FileServiceError(Exception):
-    pass
+def extract_text_and_delete(uploaded_file):
+
+    text = uploaded_file.read().decode("utf-8")
 
 
-def get_file_content_service(file_id: int) -> tuple[str, str]:
-    learning_file = get_object_or_404( FileLearning, id=file_id)
-    file_path = learning_file.file.path
+    file_path = uploaded_file.temporary_file_path() if hasattr(uploaded_file, 'temporary_file_path') else None
 
-    if not os.path.exists(file_path):
-        raise FileServiceError("не знайдено на сервері.")
+    if file_path and os.path.exists(file_path):
 
-    try:
-        with open(file_path, 'r', encoding='utf-8') as f:
-            content = f.read()
+    return text
 
-    except Exception as e:
-        raise FileServiceError(f"Сталася помилка при читанні файлу: {e}")
 
-    return learning_file.title, content
+def create_file_from_text(title: str, text: str, file_type: str):
+
+    file_obj = GeneratedFile.objects.create(
+        title=title,
+        file_type=file_type
+    )
+
+    content = ContentFile(text.encode("utf-8"))
+
+    filename = f"{title}.txt"
+    file_obj.file.save(filename, content)
+
+    return file_obj

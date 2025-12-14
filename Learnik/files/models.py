@@ -1,10 +1,7 @@
 from django.db import models
 
-
-class FileLearning(models.Model):
-    title = models.CharField(max_length=255, verbose_name="Назва файлу")
-    file = models.FileField(upload_to='learning_materials/', verbose_name="Файл")
+class GeneratedFile(models.Model):
+    title = models.CharField(max_length=255)
+    file = models.FileField(upload_to="generated/")
+    file_type = models.CharField(max_length=20)
     created_at = models.DateTimeField(auto_now_add=True)
-
-    def __str__(self):
-        return self.title

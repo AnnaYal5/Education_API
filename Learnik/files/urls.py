@@ -1,6 +1,7 @@
 from django.urls import path
-from . import views
+from .views import upload_file_and_read_text, download_text_as_file
 
 urlpatterns = [
-    path('files/<int:file_id>/content/', views.get_file_content, name='file-content'),
+    path('upload/', upload_file_and_read_text),
+    path('download/<int:text_id>/', download_text_as_file),
 ]
