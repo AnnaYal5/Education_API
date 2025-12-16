@@ -12,6 +12,7 @@ def extract_text_and_delete(uploaded_file):
     file_path = uploaded_file.temporary_file_path() if hasattr(uploaded_file, 'temporary_file_path') else None
 
     if file_path and os.path.exists(file_path):
+        os.remove(file_path)
 
     return text
 
