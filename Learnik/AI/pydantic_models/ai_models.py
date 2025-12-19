@@ -22,3 +22,11 @@ class AICreateTestModel(BaseModel):
     language: str
     font: str
     font_size: int
+
+# ============ Книги =================
+class AICreateBookModel(BaseModel):
+    text: str
+    style: str
+    font: str
+    font_size: int
+    language: str

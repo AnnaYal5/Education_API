@@ -7,15 +7,17 @@ from asgiref.sync import async_to_sync
 
 from .services import AICommunicator
 
-from .models.ai_models import (
+from .pydantic_models.ai_models import (
     AICreateConspectModel,
-    AICreateTestModel
+    AICreateTestModel,
+    AICreateBookModel
 )
 
 from .serializers import (
     AICreateConspectSerializer,
     AIResponseSerializer,
-    AICreateTestSerializer
+    AICreateTestSerializer,
+    AICreateBookSerializer
 )
 
 # ============= Генерація конспекту =============
@@ -81,6 +83,41 @@ def create_test(request):
         )
 
         response_serializer = AIResponseSerializer({"text": test_html})
+        return Response(response_serializer.data, status=status.HTTP_200_OK)
+    except Exception as e:
+        print(e)
+        return Response(
+            {"detail": "Невідома внутрішня помилка сервера."},
+            status=status.HTTP_500_INTERNAL_SERVER_ERROR
+        )
+    
+# ============= Аналіз книги =============
+@extend_schema(
+    request=AICreateBookSerializer,
+    responses=AIResponseSerializer,
+    description="Аналіз книги за допомогою AI"
+)
+
+@permission_classes([AllowAny])
+@api_view(['POST'])
+def analyze_book(request):
+    serializer = AICreateBookSerializer(data=request.data)
+    serializer.is_valid(raise_exception=True)
+
+    data = serializer.validated_data
+    ai_request = AICreateBookModel(**data)
+    ai_communicator = AICommunicator()
+
+    try:
+        analysis_html = async_to_sync(ai_communicator.generate_book)(
+            text=ai_request.text,
+            language=ai_request.language,
+            style=ai_request.style,
+            font=ai_request.font,
+            size_font=ai_request.font_size
+        )
+
+        response_serializer = AIResponseSerializer({"text": analysis_html})
         return Response(response_serializer.data, status=status.HTTP_200_OK)
     except Exception as e:
         print(e)

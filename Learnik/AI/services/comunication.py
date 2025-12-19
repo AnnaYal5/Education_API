@@ -109,4 +109,32 @@ class AICommunicator:
 
         return response.text
     
-    # TODO Доробити механізм для форматування книг
+    async def generate_book(self, text: str, style: str, language: str, font: str, size_font: int) -> str:
+        """
+        Функція для генерації книги на основі заданого тексту з використанням AI-моделі.
+
+        Вхідні параметри:
+        - text (str): Текст для створення книги.
+        - style (str): Стиль написання книги.
+        - language (str): Мова книги.
+        - font (str): Шрифт для книги.
+        - size_font (int): Розмір шрифту для книги.
+
+        Вихідні дані:
+        - str: Згенерована книга у форматі тексту.
+        """
+
+        user_prompt = f"""
+            Create a book based on the following text: {text}
+            Writing Style: {style}
+            language: {language} (ALL content must be in {language})
+            Font: {font}
+            Font Size: {size_font}pt
+            """
+        
+        response = await self.__generate_anser(
+            system_prompt=config.book_system_prompt,
+            user_prompt=user_prompt
+        )
+
+        return response.text

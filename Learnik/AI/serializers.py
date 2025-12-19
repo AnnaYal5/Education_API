@@ -18,5 +18,12 @@ class AICreateTestSerializer(serializers.Serializer):
     font_size = serializers.IntegerField(min_value=8, help_text="Розмір шрифту")
     font = serializers.CharField(max_length=50, help_text="Шрифт тексту")
 
+class AICreateBookSerializer(serializers.Serializer):
+    text = serializers.CharField(help_text="Текст книги для аналізу")
+    language = serializers.CharField(max_length=50, help_text="Мова (uk, en, etc.)")
+    style = serializers.CharField(max_length=50, help_text="Стиль тексту")
+    font_size = serializers.IntegerField(min_value=8, help_text="Розмір шрифту")
+    font = serializers.CharField(max_length=50, help_text="Шрифт тексту")
+
 class AIResponseSerializer(serializers.Serializer):
     text = serializers.CharField(help_text="HTML контент конспекту")
