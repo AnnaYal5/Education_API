@@ -21,13 +21,8 @@ from .serializers import (
 )
 
 # ============= Генерація конспекту =============
-@extend_schema(
-    request=AICreateConspectSerializer,
-    responses=AIResponseSerializer,
-    description="Генерація конспекту за допомогою AI"
-)
-@permission_classes([AllowAny])
 @api_view(['POST'])
+@permission_classes([AllowAny])
 def create_conspect(request):
     serializer = AICreateConspectSerializer(data=request.data)
     serializer.is_valid(raise_exception=True)
@@ -51,8 +46,9 @@ def create_conspect(request):
         return Response(response_serializer.data, status=status.HTTP_200_OK)
     
     except Exception as e:
+        print(f"Error: {e}")
         return Response(
-            {"detail": "Невідома внутрішня помилка сервера."},
+            {"detail": str(e)},
             status=status.HTTP_500_INTERNAL_SERVER_ERROR
         )
 

@@ -9,7 +9,7 @@ class AICreateConspectModel(BaseModel):
     topic: str
     words_count: int
     language: str
-    complexity: int
+    complexity: str
     style: str
     font: str
     font_size: int
